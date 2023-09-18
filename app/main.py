@@ -17,14 +17,19 @@ def get_db():
         db.close()
 
 @app.get('/orders/', response_model=list[schemas.Order])
-def get_orders(skip: int = 0, limit: int = 0, db: Session = Depends(get_db)):
-    orders = crud.get_orders(db, skip=skip, limit=limit)
+def get_orders(db: Session = Depends(get_db)):
+    orders = crud.get_orders(db)
     return orders
 
 @app.get('/order/{order_id}', response_model=schemas.Order)
 def get_order(order_id: int, db: Session = Depends(get_db)):
     get_order = crud.get_order(db=db, order_id=order_id)
     return get_order
+
+@app.get('/order/{order_id}/detail', response_model=None)
+def get_order(order_id: int, db: Session = Depends(get_db)):
+    data = crud.get_order_detail(db=db, order_id=order_id)
+    return data
 
 @app.post('/order', response_model=schemas.Order)
 def create_order(order: schemas.Order, db: Session = Depends(get_db)):
