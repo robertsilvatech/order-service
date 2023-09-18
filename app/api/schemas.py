@@ -10,6 +10,3 @@ class Order(BaseModel):
 
     class Config:
         orm_mode = True
-
-class OrderDelete(Order):
-    order_id: int
