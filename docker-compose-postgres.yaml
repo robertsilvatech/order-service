@@ -1,0 +1,22 @@
+version: "3.10"
+
+services:
+  postgres:
+    image: postgres:15
+    networks:
+      - "microservices"
+    ports:
+      - "5432:5432"
+    #volumes:
+      #- ./db-data:/var/lib/postgresql/data
+      #- ./data/postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+    environment:
+      - POSTGRES_USER=fastapi
+      - POSTGRES_PASSWORD=fastapi
+      - POSTGRES_DB=orders
+      #- POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+networks:
+  microservices:
+    external: true
