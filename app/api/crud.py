@@ -79,20 +79,33 @@ def delete_order(db: Session, order_id: id):
         msg = {"message": f'Order id {order_id} not found'}
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=msg)
     
-def update_order(db: Session, order_id: id, order_data: schemas.Order):
-    find_order = db.query(models.Order).filter(models.Order.order_id == order_id).first()
-    if find_order:
+def update_order(db: Session, order_id: id, order_data: schemas.OrderUpdate):
+    data = db.query(models.Order).filter(models.Order.order_id == order_id).first()
+    if data:
         if order_data.status:
-            find_order.status = order_data.status
-        if order_data.amount:
-            find_order.amount = order_data.amount
-        db.commit()
-        db.refresh(find_order)
-        return find_order
+            data.status = order_data.status
+        if order_data.items:
+            data.items = order_data.items
+            itens_not_found = []
+            amount_from_menu = 0.0
+            for item in order_data.items:
+                item_detail = _check_item_exists(item)
+                if not item_detail:
+                    itens_not_found.append(item)
+                else:
+                    amount_from_menu += item_detail['price']
+            if len(itens_not_found) > 0:
+                msg = {"message": f'Itens with id: {itens_not_found} not found in Menu, check your request'}
+                return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=msg)
+            else:
+                data.amount = amount_from_menu
+            db.commit()
+            db.refresh(data)
+            return data   
+        return data  
     else:
         msg = {"message": f'Order id {order_id} not found'}
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=msg)        
-
 
 def get_orders(db: Session):
     data = db.query(models.Order).all()
