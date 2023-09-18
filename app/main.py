@@ -37,7 +37,7 @@ def create_order(order: schemas.Order, db: Session = Depends(get_db)):
     return db_order
 
 @app.put('/order/{order_id}', response_model=None)
-def update_order(order_id: int, order_data: schemas.Order, db: Session = Depends(get_db)):
+def update_order(order_id: int, order_data: schemas.OrderUpdate, db: Session = Depends(get_db)):
     order_update = crud.update_order(db=db, order_id=order_id ,order_data=order_data)
     return order_update
 
