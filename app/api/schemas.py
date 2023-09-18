@@ -10,3 +10,7 @@ class Order(BaseModel):
 
     class Config:
         orm_mode = True
+
+class OrderUpdate(Order):
+    pass
+    
