@@ -26,12 +26,13 @@ def _get_items_detail():
 def create_order(db: Session, order: schemas.Order):
     itens_not_found = []
     amount_from_menu = 0.0
-    for item in order.items:
-        item_detail = _check_item_exists(item)
-        if not item_detail:
-            itens_not_found.append(item)
-        else:
-            amount_from_menu += item_detail['price']
+    if order.items:
+        for item in order.items:
+            item_detail = _check_item_exists(item)
+            if not item_detail:
+                itens_not_found.append(item)
+            else:
+                amount_from_menu += item_detail['price']
     if len(itens_not_found) > 0:
         msg = {"message": f'Itens with id: {itens_not_found} not found in Menu, check your request'}
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content=msg)

@@ -1,0 +1,27 @@
+version: "3.10"
+
+services:
+  db-order-service:
+    image: postgres:15
+    networks:
+      - "microservices"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=fastapi
+      - POSTGRES_PASSWORD=fastapi
+      - POSTGRES_DB=orders
+      - POSTGRES_HOST_AUTH_METHOD=trust
+  order-service:
+    image: order-service:0.0.1
+    networks:
+      - "microservices"
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://fastapi:fastapi@order-service-db-order-service-1/orders
+      - MENU_SERVICE_URL=http://127.0.0.1:8001
+
+networks:
+  microservices:
+    external: true
